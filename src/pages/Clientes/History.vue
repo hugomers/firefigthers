@@ -1,0 +1,250 @@
+<template>
+  <q-page padding>
+    <q-card class="my-card">
+      <q-card-section class="text-right">
+        <q-btn color="negative" icon="archive" label="" @click="wndArchives.state = true" />
+      </q-card-section>
+      <q-separator />
+      <q-card-section horizontal>
+        <q-card-section class="col">
+          <q-table title="Solicitudes" :rows="qts_news" row-key="name" :columns="table.cols" @row-click="clicked"
+            :filter="table.filter" :visible-columns="table.vcolumns">
+            <template v-slot:top>
+              <div class="full-width row justify-end">
+                <q-input v-model="table.filter" type="text" label="Buscar" />
+              </div>
+            </template>
+          </q-table>
+        </q-card-section>
+        <q-card-section class="col">
+          <q-table title="Aceptados" :rows="qts_acepted" :columns="table2.cols" row-key="name" :filter="table2.filter"
+            :visible-columns="table2.vcolumns">
+            <template v-slot:top>
+              <div class=" full-width row justify-end">
+                <q-input v-model="table2.filter" type="text" label="Buscar" />
+              </div>
+            </template>
+          </q-table>
+        </q-card-section>
+      </q-card-section>
+
+    </q-card>
+    <q-dialog v-model="wnd.state" :persistent="wnd.pts">
+
+      <q-card v-if="wnd.pts">
+        <q-card-section>
+          <q-spinner-ball color="primary" size="md" />
+          <q-tooltip :offset="[0, 8]">QSpinnerBall</q-tooltip>
+        </q-card-section>
+
+      </q-card>
+      <q-card v-else>
+        <q-card-section v-if="wnd.row._status == 0">
+          <div class="text-h6 ">Solicitud: {{ wnd.row.id }}</div>
+          <div class="text-h5 text-center">Cliente</div>
+          <div class="text-h4 text-center">{{ wnd.row.nom_cli }}</div>
+          <div class="text-subtitle2 text-center">Sucursal: {{ wnd.row.sucursal }}</div>
+          <q-card-actions align="right">
+            <q-btn flat @click="ignoredClient">Rechazar</q-btn>
+            <q-btn flat @click="addClient">Aprobar</q-btn>
+          </q-card-actions>
+
+        </q-card-section>
+        <q-card-section v-if="wnd.row._status == 1">
+          {{ wnd.row }} - 1
+        </q-card-section>
+        <q-card-section v-if="wnd.row._status == 2">
+          {{ wnd.row }} - 2
+        </q-card-section>
+        <q-card-actions>
+          <q-btn flat label="Cancelar" v-close-popup>
+          </q-btn>
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+    <q-dialog v-model="wndArchives.state" persistent>
+      <QuotesArchive :quotes="qts_decline" @restore="restore" @destroy="destroy" />
+      <q-card-actions>
+        <q-btn flat label="Cancelar" v-close-popup>
+        </q-btn>
+      </q-card-actions>
+    </q-dialog>
+  </q-page>
+</template>
+
+
+<script setup>
+import { ref, computed } from 'vue'
+import { api } from 'src/boot/axios';
+import { useQuasar } from 'quasar';
+import QuotesArchive from 'src/components/Clientes/QuotesArchive.vue'
+const $q = useQuasar();
+
+
+
+let quotes = ref([]);
+
+let wnd = ref({ state: false, row: null, pts: false });
+let qstates = {
+  0: { label: "Nueva", color: "text-pink" },
+  1: { label: "Aprobada", color: "text-light-green-10" },
+  2: { label: "Rechazada", color: "text-red-14" }
+}
+
+let wndArchives = ref({ state: false, row: null });
+
+
+
+let table = ref({
+  vcolumns: ['client', 'celphone', 'price', 'status'],
+  cols: [
+    { name: 'id', label: 'ID', field: 'id' },
+    { name: 'client', label: 'Cliente', field: 'nom_cli' },
+    { name: 'address', label: 'Domicilio', field: r => `${r.street}, ${r.num_ext}` },
+    { name: 'celphone', label: 'Telefono', field: 'celphone' },
+    { name: 'email', label: 'Correo', field: 'email' },
+    { name: 'price', label: 'Precio', field: 'price' },
+    { name: 'tickets', label: 'Ticket', field: 'tickets' },
+    {
+      name: 'status', label: 'Estado',
+      field: row => qstates[row._status].label,
+      classes: row => qstates[row._status].color
+    },
+    { name: 'store', label: 'Sucursal', field: 'sucursal' },
+    // { name:'idFactusol', label:'Factusol', field:'_fsid'},
+
+  ],
+  filter: "",
+});
+
+let table2 = ref({
+  vcolumns: ['client', 'celphone', 'price', 'status', 'idfs'],
+  cols: [
+
+    { name: 'id', label: 'ID', field: 'id' },
+    { name: 'idfs', label: 'Factusol', field: 'fs_id' },
+    { name: 'client', label: 'Cliente', field: 'nom_cli' },
+    { name: 'address', label: 'Domicilio', field: r => `${r.street}, ${r.num_ext}` },
+    { name: 'celphone', label: 'Telefono', field: 'celphone' },
+    { name: 'email', label: 'Correo', field: 'email' },
+    { name: 'price', label: 'Precio', field: 'price' },
+    { name: 'tickets', label: 'Ticket', field: 'tickets' },
+    {
+      name: 'status', label: 'Estado',
+      field: row => qstates[row._status].label,
+      classes: row => qstates[row._status].color
+    },
+    { name: 'store', label: 'Sucursal', field: 'sucursal' },
+
+  ],
+  filter: "",
+});
+
+
+let qts_news = computed(() => quotes.value.filter(q => q._status == 0));
+let qts_decline = computed(() => quotes.value.filter(q => q._status == 2));
+let qts_acepted = computed(() => quotes.value.filter(q => q._status == 1));
+
+
+
+const index = async () => {
+  console.log('Traiendo solicitudes creadas');
+  const resp = await api.get('/admincli/solicitudes');
+
+  console.log(resp);
+
+  // resp.data.solicitudes.map(s => s.address = JSON.parse(s.address))
+  quotes.value = resp.data.solicitudes;
+}
+
+const clicked = (a, row) => {
+  console.log(row._status)
+
+  wnd.value.row = row;
+
+  wnd.value.state = true;
+}
+
+const addClient = async () => {
+  wnd.value.pts = true;
+  let resp = await api.post('/admincli/addClient', wnd.value.row).then(r => r).catch(r => r);
+  let status = resp.request.status;
+  if(status != 201){
+    console.log("error brou")
+    console.log(resp)
+    let msg = resp.response.data.error.msg;
+    wnd.value.pts = false;
+    $q.notify({
+      message: msg,
+      icon: 'close',
+      color: 'negative'
+    });
+
+  }else{
+    let idres = resp.data.id;
+    let inx = quotes.value.findIndex(e => e.id == idres);
+    quotes.value[inx]._status = resp.data._status;
+    wnd.value.state = false;
+    wnd.value.pts = false;
+    $q.notify({
+      message: "ESTA COSA SE CREO WE",
+      icon: 'check_circle',
+      color: 'positive'
+    });
+    console.log(resp)
+  }
+}
+
+const ignoredClient = async () => {
+  wnd.value.pts = true;
+  let resp = await api.patch('/admincli/ignoredClient', wnd.value.row);
+  let idres = resp.data.id;
+  let inx = quotes.value.findIndex(e => e.id == idres);
+  quotes.value[inx]._status = resp.data._status;
+  wnd.value.state = false;
+  wnd.value.pts = false;
+  console.log(inx);
+  $q.notify({
+    message: "ESTA COSA SE IGNORO WE",
+    icon: 'close',
+    color: 'danger'
+  });
+  console.log(resp)
+}
+const restore = async (id) => {
+  let resp = await api.patch('/admincli/Restore', { id });
+
+
+  let idres = resp.data.id;
+  let inx = quotes.value.findIndex(e => e.id == idres);
+  quotes.value[inx]._status = resp.data._status;
+  // console.log(inx);
+  $q.notify({
+    message: "Restaurado",
+    icon: 'check',
+    color: 'primary'
+  });
+  console.log(resp)
+
+}
+
+const destroy = async (id) => {
+  console.log('amo a destruira ' + id)
+
+  let resp = await api.patch('/admincli/Delete', { id });
+
+  let idres = resp.data.id;
+  let inx = quotes.value.findIndex(e => e.id == idres);
+  quotes.value[inx]._status = resp.data._status;
+  // console.log(inx);
+  $q.notify({
+    message: "Eliminado",
+    icon: 'close',
+    color: 'negative'
+  });
+  console.log(resp)
+}
+
+index();
+
+</script>
