@@ -4,13 +4,7 @@
     <!-- (Optional) The Header -->
     <q-header elevated>
       <q-toolbar>
-        <q-btn
-          flat
-          round
-          dense
-          icon="menu"
-          @click="toggleLeftDrawer"
-        />
+
 
         <q-toolbar-title>
           Salidas

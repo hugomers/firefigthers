@@ -10,7 +10,8 @@
           <q-table title="Solicitudes" :rows="qts_news" row-key="name" :columns="table.cols" @row-click="clicked"
             :filter="table.filter" :visible-columns="table.vcolumns">
             <template v-slot:top>
-              <div class="full-width row justify-end">
+              <div class=" full-width row justify-between item-center">
+                <div class="text-h5">Pendientes</div>
                 <q-input v-model="table.filter" type="text" label="Buscar" />
               </div>
             </template>
@@ -20,7 +21,8 @@
           <q-table title="Aceptados" :rows="qts_acepted" :columns="table2.cols" row-key="name" :filter="table2.filter"
             :visible-columns="table2.vcolumns">
             <template v-slot:top>
-              <div class=" full-width row justify-end">
+              <div class=" full-width row justify-between item-center">
+                <div class="text-h5"> <q-btn color="primary" icon="sync"/> Aceptadas</div>
                 <q-input v-model="table2.filter" type="text" label="Buscar" />
               </div>
             </template>

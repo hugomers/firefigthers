@@ -1,11 +1,34 @@
 <template>
+  <div class=" row justify-end">
+    <q-btn flat round icon="search" color="teal" @click="searching" title="Restaurar" size="2em" />
+  </div>
+  <q-dialog v-model="sar.state">
+    <q-card class="my-card">
+      <q-card-section class="my-card bg-secondary text-white">
+
+
+        <div class="text-h4">
+          <q-icon name="search" class="q-mr-xs" />
+          Buscador de Clientes
+        </div>
+        <q-card-section>
+          <div>
+            <pre>{{ client }}</pre>
+          </div>
+        </q-card-section>
+
+
+      </q-card-section>
+    </q-card>
+  </q-dialog>
   <q-page padding class="flex flex-center">
+
     <q-card bordered flat class="my-card">
       <q-card-section class="my-card bg-secondary text-white">
 
 
         <div class="text-h4">
-          <q-icon name="person_add" class="q-mr-xs"/>
+          <q-icon name="person_add" class="q-mr-xs" />
           Solicitud para alta de cliente
         </div>
 
@@ -23,13 +46,15 @@
               <q-input rounded outlined v-model="form.address.numext" label="Num EXT" class="col"> </q-input>
             </div>
             <div class="row q-my-sm">
-              <q-input rounded outlined v-model="form.address.cp" label="Codigo Postal" mask="#####" class="col"> </q-input>
+              <q-input rounded outlined v-model="form.address.cp" label="Codigo Postal" mask="#####" class="col">
+              </q-input>
               <q-input rounded outlined v-model="form.address.state" label="Estado" class="col"> </q-input>
             </div>
             <q-input rounded outlined v-model="form.address.colinia" label="Colonia" class="q-my-sm"> </q-input>
             <q-input rounded outlined v-model="form.address.mun" label="Municipio" class="q-my-sm"> </q-input>
 
-            <q-input rounded outlined v-model="form.phone" label="Telefono" mask="##-####-####" class="q-my-sm"> </q-input>
+            <q-input rounded outlined v-model="form.phone" label="Telefono" mask="##-####-####" class="q-my-sm">
+            </q-input>
             <q-input rounded outlined v-model="form.email" label="Correo Electronico" class="q-my-sm"> </q-input>
 
             <q-card-section class="">
@@ -37,11 +62,12 @@
             </q-card-section>
             <q-input rounded outlined v-model="form.ticket" label="Ticket" mask="#-######" class="q-my-sm"> </q-input>
             <q-select rounded outlined option-label="name" v-model="form.branch.val" :options="form.branch.opts"
-              @input="getStaff(form.branch.val.id)" label="Selecciona Sucursal" @update:model-value="fillAgents" class="q-my-sm" />
+              @input="getStaff(form.branch.val.id)" label="Selecciona Sucursal" @update:model-value="fillAgents"
+              class="q-my-sm" />
             <q-select rounded outlined v-if="form.branch.val" option-label="complete_name" v-model="form.agent.val"
-              :options="form.agent.opts" label="Quien atendio" class="q-my-sm"/>
-            <q-select rounded outlined v-model="form.priceList.val" :options="form.priceList.opts"
-              label="Precio Otorgado" class="q-my-sm"/>
+              :options="form.agent.opts" label="Quien atendio" class="q-my-sm" />
+            <q-select rounded outlined v-model="form.priceList.val" :options="form.priceList.opts" label="Precio Otorgado"
+              class="q-my-sm" />
 
             <q-input rounded outlined v-model="form.notes" label="Notas" class="q-my-sm"> </q-input>
           </div>
@@ -62,6 +88,9 @@ import { api } from 'src/boot/axios';
 import { useQuasar } from 'quasar';
 const $q = useQuasar();
 
+let sar = ref({ state: false });
+
+let client = ref([]);
 
 let form = ref({
   branch: {
@@ -162,11 +191,21 @@ const fillAgents = v => {
   form.value.agent.opts = form.value.agent.db.filter(e => e._store == v.id);
 }
 
+let searching = async () => {
+  const resp = await api.get('/admincli/getclient');
+  sar.value.state = true;
+  client.value = resp.data;
+
+  console.log(resp);
+
+}
+
+
 </script>
 
 <style scope>
-.subrayado{
-  text-decoration:underline;
+.subrayado {
+  text-decoration: underline;
 }
 </style>
 
