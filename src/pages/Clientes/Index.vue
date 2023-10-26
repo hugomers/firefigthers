@@ -135,7 +135,7 @@ let dataToSave = computed(() => {
     name: form.value.name,
     ticket: form.value.ticket,
     address: form.value.address,
-    phone: form.value.phone.split("-").join(""),
+    phone: form.value.phone ? form.value.phone.split("-").join("") : null,
     email: form.value.email,
     priceList: form.value.priceList.val,
     agent: form.value.agent.val,
@@ -155,16 +155,33 @@ index();
 
 const saveQuote = async () => {
   form.value.state = true;
-  let resp = await api.post('/admincli', dataToSave.value);
-  clearForm();
-  console.log(dataToSave.value)
-  form.value.state = false;
-  $q.notify({
-    message: "ESTA COSA SE CREO WE",
-    icon: 'check_circle',
-    color: 'positive'
-  });
-  console.log(resp)
+  let cli = [];
+  let clise = await api.get('/admincli/getclient');
+  cli = clise.data
+  let inx = cli.findIndex((e) => (e.TELCLI == dataToSave.value.phone || e.EMACLI == dataToSave.value.email))
+  console.log(inx);
+  if (inx < 0) {
+    let resp = await api.post('/admincli', dataToSave.value);
+    clearForm();
+    console.log(dataToSave.value)
+    form.value.state = false;
+    $q.notify({
+      message: "ESTA COSA SE CREO WE",
+      icon: 'check_circle',
+      color: 'positive'
+    });
+    console.log(resp)
+  }else{
+    form.value.state = false;
+    console.log(cli[inx]);
+    let exiscli = cli[inx].CODCLI + " - " + cli[inx].NOFCLI;
+    $q.notify({
+      message: "El cliente existe ID "+ exiscli,
+      icon: 'close',
+      color: 'negative'
+    });
+  }
+
 
 }
 const clearForm = () => {
