@@ -136,7 +136,7 @@ let dataToSave = computed(() => {
     ticket: form.value.ticket,
     address: form.value.address,
     phone: form.value.phone ? form.value.phone.split("-").join("") : null,
-    email: form.value.email,
+    email: form.value.email ? form.value.email : null,
     priceList: form.value.priceList.val,
     agent: form.value.agent.val,
     notes: form.value.notes,

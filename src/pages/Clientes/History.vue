@@ -11,7 +11,7 @@
             :filter="table.filter" :visible-columns="table.vcolumns">
             <template v-slot:top>
               <div class=" full-width row justify-between item-center">
-                <div class="text-h5">Pendientes</div>
+                <div class="text-h5 ">Pendientes</div>
                 <q-input v-model="table.filter" type="text" label="Buscar" />
               </div>
             </template>
@@ -22,14 +22,33 @@
             :visible-columns="table2.vcolumns">
             <template v-slot:top>
               <div class=" full-width row justify-between item-center">
-                <div class="text-h5"> <q-btn color="primary" icon="sync"/> Aceptadas</div>
+                <div><q-btn color="positive" icon="sync" @click="synclient" /></div>
+                <div class="text-h5">Aceptadas</div>
                 <q-input v-model="table2.filter" type="text" label="Buscar" />
               </div>
             </template>
           </q-table>
         </q-card-section>
       </q-card-section>
+    </q-card>
 
+    <q-card class="my-card">
+      <q-card-section class="text-right">
+      </q-card-section>
+      <q-separator />
+      <q-card-section horizontal>
+        <q-card-section class="col">
+          <q-table title="Terminadas" :rows="qts_sync" row-key="name" :columns="table3.cols"
+            :filter="table3.filter" :visible-columns="table3.vcolumns">
+            <template v-slot:top>
+              <div class=" full-width row justify-between item-center">
+                <div class="text-h5 ">En Sucursales</div>
+                <q-input v-model="table3.filter" type="text" label="Buscar" />
+              </div>
+            </template>
+          </q-table>
+        </q-card-section>
+      </q-card-section>
     </q-card>
     <q-dialog v-model="wnd.state" :persistent="wnd.pts">
 
@@ -87,10 +106,14 @@ const $q = useQuasar();
 let quotes = ref([]);
 
 let wnd = ref({ state: false, row: null, pts: false });
+
 let qstates = {
   0: { label: "Nueva", color: "text-pink" },
   1: { label: "Aprobada", color: "text-light-green-10" },
-  2: { label: "Rechazada", color: "text-red-14" }
+  2: { label: "Rechazada", color: "text-red-14" },
+  3: { label: "Sincronizadas", color: "text-deep-orange-10" },
+  4: { label: "Eliminadas", color: "text-deep-orange-10" }
+
 }
 
 let wndArchives = ref({ state: false, row: null });
@@ -142,10 +165,34 @@ let table2 = ref({
   filter: "",
 });
 
+let table3 = ref({
+  vcolumns: ['client', 'celphone', 'price', 'status', 'idfs'],
+  cols: [
+
+    { name: 'id', label: 'ID', field: 'id' },
+    { name: 'idfs', label: 'Factusol', field: 'fs_id' },
+    { name: 'client', label: 'Cliente', field: 'nom_cli' },
+    { name: 'address', label: 'Domicilio', field: r => `${r.street}, ${r.num_ext}` },
+    { name: 'celphone', label: 'Telefono', field: 'celphone' },
+    { name: 'email', label: 'Correo', field: 'email' },
+    { name: 'price', label: 'Precio', field: 'price' },
+    { name: 'tickets', label: 'Ticket', field: 'tickets' },
+    {
+      name: 'status', label: 'Estado',
+      field: row => qstates[row._status].label,
+      classes: row => qstates[row._status].color
+    },
+    { name: 'store', label: 'Sucursal', field: 'sucursal' },
+
+  ],
+  filter: "",
+});
+
 
 let qts_news = computed(() => quotes.value.filter(q => q._status == 0));
 let qts_decline = computed(() => quotes.value.filter(q => q._status == 2));
 let qts_acepted = computed(() => quotes.value.filter(q => q._status == 1));
+let qts_sync = computed(() => quotes.value.filter(q => q._status == 3));
 
 
 
@@ -171,7 +218,7 @@ const addClient = async () => {
   wnd.value.pts = true;
   let resp = await api.post('/admincli/addClient', wnd.value.row).then(r => r).catch(r => r);
   let status = resp.request.status;
-  if(status != 201){
+  if (status != 201) {
     console.log("error brou")
     console.log(resp)
     let msg = resp.response.data.error.msg;
@@ -182,7 +229,7 @@ const addClient = async () => {
       color: 'negative'
     });
 
-  }else{
+  } else {
     let idres = resp.data.id;
     let inx = quotes.value.findIndex(e => e.id == idres);
     quotes.value[inx]._status = resp.data._status;
@@ -245,6 +292,35 @@ const destroy = async (id) => {
     color: 'negative'
   });
   console.log(resp)
+}
+
+const synclient = async () => {
+  wnd.value.state = true
+  wnd.value.pts = true;
+  console.log('SINCRONIZANDO CLIENTES');
+  let resp = await api.get('/admincli/syncClient').then(r => r).catch(r => r);
+  let status = resp.request.status
+  if(status != 200){
+    $q.notify({
+      message: "hubo problemas con la replicacion",
+      icon: 'close',
+      color: 'negative'
+    });
+  }else{
+    let aresp = resp.data;
+  aresp.forEach(e => {
+    let isd = quotes.value.findIndex(el => el.id == e.id);
+    quotes.value[isd]._status = e._status
+  });
+  wnd.value.state = false
+  wnd.value.pts = false;
+  $q.notify({
+      message: "CLIENTES SINCRONIZADOS",
+      icon: 'check_circle',
+      color: 'positive'
+    });
+
+  }
 }
 
 index();
