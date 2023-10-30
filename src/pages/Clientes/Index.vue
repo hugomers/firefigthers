@@ -1,10 +1,10 @@
 <template>
   <div class=" row justify-end">
-    <q-btn flat round icon="search" color="teal" @click="searching" title="Restaurar" size="2em" />
+    <q-btn flat round icon="search" color="teal" @click="sar.state = true" title="Restaurar" size="2em" />
   </div>
   <q-dialog v-model="sar.state">
     <q-card class="my-card">
-      <q-card-section class="my-card bg-secondary text-white">
+      <q-card-section>
 
 
         <div class="text-h4">
@@ -12,9 +12,17 @@
           Buscador de Clientes
         </div>
         <q-card-section>
-          <div>
-            <pre>{{ client }}</pre>
-          </div>
+          <q-form @submit="searching">
+            <div class="row justify-between">
+              <q-input v-model="cl_finder.val" type="text" label="Buscar" />
+              <!-- <pre>{{ cl_finder }}</pre> -->
+              <q-btn icon="search" type="submit" color="primary" />
+            </div>
+            <div>
+              <q-table :rows="cl_finder.table.rows" :columns="cl_finder.table.cols" row-key="name" :no-data-label="cl_finder.table.noresults"/>
+            </div>
+          </q-form>
+
         </q-card-section>
 
 
@@ -89,6 +97,20 @@ import { useQuasar } from 'quasar';
 const $q = useQuasar();
 
 let sar = ref({ state: false });
+let cl_finder = ref({
+  val:"",
+  table:{
+    cols:[
+      {name:'Fs_id', label:'Codigo', field:'CODCLI'},
+      {name:'Nombre', label:'Nombre', field:'NOFCLI'},
+      {name:'Email', label:'Correo', field:'EMACLI'},
+      {name:'Telefono', label:'Telefono', field:'TELCLI'},
+      {name:'Tarifa', label:'Precio', field:'TARCLI'},
+    ],
+    rows:[],
+    noresults:"><"
+  }
+});
 
 let client = ref([]);
 
@@ -171,12 +193,12 @@ const saveQuote = async () => {
       color: 'positive'
     });
     console.log(resp)
-  }else{
+  } else {
     form.value.state = false;
     console.log(cli[inx]);
     let exiscli = cli[inx].CODCLI + " - " + cli[inx].NOFCLI;
     $q.notify({
-      message: "El cliente existe ID "+ exiscli,
+      message: "El cliente existe ID " + exiscli,
       icon: 'close',
       color: 'negative'
     });
@@ -209,10 +231,11 @@ const fillAgents = v => {
 }
 
 let searching = async () => {
-  const resp = await api.get('/admincli/getclient');
-  sar.value.state = true;
-  client.value = resp.data;
-
+  let sico = cl_finder.value.val;
+  // console.log(`'/admincli/getclient?q=${sico}'`)
+  const resp = await api.get(`/admincli/getclient?q=${sico}`);
+  // sar.value.state = true;
+  cl_finder.value.table.rows = resp.data;
   console.log(resp);
 
 }

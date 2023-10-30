@@ -143,7 +143,7 @@ let table = ref({
 });
 
 let table2 = ref({
-  vcolumns: ['client', 'celphone', 'price', 'status', 'idfs'],
+  vcolumns: ['client', 'celphone', 'price', 'status', 'idfs', 'ReplyStore'],
   cols: [
 
     { name: 'id', label: 'ID', field: 'id' },
@@ -160,6 +160,7 @@ let table2 = ref({
       classes: row => qstates[row._status].color
     },
     { name: 'store', label: 'Sucursal', field: 'sucursal' },
+    { name: 'ReplyStore', label: 'ReplicadoEn:', field: 'Stores' }
 
   ],
   filter: "",
@@ -233,6 +234,7 @@ const addClient = async () => {
     let idres = resp.data.id;
     let inx = quotes.value.findIndex(e => e.id == idres);
     quotes.value[inx]._status = resp.data._status;
+    quotes.value[inx].fs_id = resp.data.fs_id;
     wnd.value.state = false;
     wnd.value.pts = false;
     $q.notify({
@@ -299,6 +301,7 @@ const synclient = async () => {
   wnd.value.pts = true;
   console.log('SINCRONIZANDO CLIENTES');
   let resp = await api.get('/admincli/syncClient').then(r => r).catch(r => r);
+  console.log(resp)
   let status = resp.request.status
   if(status != 200){
     $q.notify({
@@ -311,6 +314,7 @@ const synclient = async () => {
   aresp.forEach(e => {
     let isd = quotes.value.findIndex(el => el.id == e.id);
     quotes.value[isd]._status = e._status
+    quotes.value[isd].Stores = e.Stores
   });
   wnd.value.state = false
   wnd.value.pts = false;
