@@ -218,6 +218,7 @@ const clicked = (a, row) => {
 const addClient = async () => {
   wnd.value.pts = true;
   let resp = await api.post('/admincli/addClient', wnd.value.row).then(r => r).catch(r => r);
+  console.log(resp);
   let status = resp.request.status;
   if (status != 201) {
     console.log("error brou")
@@ -238,7 +239,7 @@ const addClient = async () => {
     wnd.value.state = false;
     wnd.value.pts = false;
     $q.notify({
-      message: "ESTA COSA SE CREO WE",
+      message: "Cliente Creado",
       icon: 'check_circle',
       color: 'positive'
     });
@@ -256,7 +257,7 @@ const ignoredClient = async () => {
   wnd.value.pts = false;
   console.log(inx);
   $q.notify({
-    message: "ESTA COSA SE IGNORO WE",
+    message: "Cliente Ignorado",
     icon: 'close',
     color: 'danger'
   });

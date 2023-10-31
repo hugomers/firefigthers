@@ -18,7 +18,7 @@
               <!-- <pre>{{ cl_finder }}</pre> -->
               <q-btn icon="search" type="submit" color="primary" />
             </div>
-            <div>
+            <div v-if="cl_finder.state">
               <q-table :rows="cl_finder.table.rows" :columns="cl_finder.table.cols" row-key="name" :no-data-label="cl_finder.table.noresults"/>
             </div>
           </q-form>
@@ -47,7 +47,7 @@
             <q-card-section class="">
               <div class="text-h5 text-center subrayado">Datos cliente</div>
             </q-card-section>
-            <q-input rounded outlined v-model="form.name" label="Nombre del Cliente" class="q-my-sm"> </q-input>
+            <q-input rounded outlined v-model="form.name" label="Nombre del Cliente" class="q-my-sm" > </q-input>
             <q-input rounded outlined v-model="form.address.street" label="Calle" class="q-my-sm"> </q-input>
             <div class="row  q-my-sm">
               <q-input rounded outlined v-model="form.address.numint" label="Num INT" class="col"> </q-input>
@@ -98,6 +98,7 @@ const $q = useQuasar();
 
 let sar = ref({ state: false });
 let cl_finder = ref({
+  state:false,
   val:"",
   table:{
     cols:[
@@ -118,7 +119,7 @@ let form = ref({
   branch: {
     val: null, opts: []
   },
-  name: null,
+  name: "",
   ticket: null,
   address: {
     street: null,
@@ -154,7 +155,7 @@ let isFormValid = computed(() => (form.value.branch.val && form.value.priceList.
 let dataToSave = computed(() => {
   return {
     branch: form.value.branch.val,
-    name: form.value.name,
+    name: form.value.name.toUpperCase(),
     ticket: form.value.ticket,
     address: form.value.address,
     phone: form.value.phone ? form.value.phone.split("-").join("") : null,
@@ -188,7 +189,7 @@ const saveQuote = async () => {
     console.log(dataToSave.value)
     form.value.state = false;
     $q.notify({
-      message: "ESTA COSA SE CREO WE",
+      message: "Formulario Creado...",
       icon: 'check_circle',
       color: 'positive'
     });
@@ -210,7 +211,7 @@ const clearForm = () => {
   form.value.ticket = null
   form.value.branch.val = null
   form.value.priceList.val = null
-  form.value.name = null
+  form.value.name = ""
   form.value.agent.val = null
   form.value.address = {
     street: null,
@@ -236,7 +237,9 @@ let searching = async () => {
   const resp = await api.get(`/admincli/getclient?q=${sico}`);
   // sar.value.state = true;
   cl_finder.value.table.rows = resp.data;
+  cl_finder.value.state = true;
   console.log(resp);
+
 
 }
 
