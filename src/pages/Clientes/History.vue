@@ -21,8 +21,8 @@
           <q-table title="Aceptados" :rows="qts_acepted" :columns="table2.cols" row-key="name" :filter="table2.filter"
             :visible-columns="table2.vcolumns">
             <template v-slot:top>
-              <div class=" full-width row justify-between item-center">
-                <div><q-btn color="positive" icon="sync" @click="synclient" /></div>
+              <div class=" full-width row justify-between item-center" >
+                <div><q-btn color="positive" icon="sync" @click="synclient" disabled="qts_acepted"/></div>
                 <div class="text-h5">Aceptadas</div>
                 <q-input v-model="table2.filter" type="text" label="Buscar" />
               </div>
@@ -38,8 +38,8 @@
       <q-separator />
       <q-card-section horizontal>
         <q-card-section class="col">
-          <q-table title="Terminadas" :rows="qts_sync" row-key="name" :columns="table3.cols"
-            :filter="table3.filter" :visible-columns="table3.vcolumns">
+          <q-table title="Terminadas" :rows="qts_sync" row-key="name" :columns="table3.cols" :filter="table3.filter"
+            :visible-columns="table3.vcolumns">
             <template v-slot:top>
               <div class=" full-width row justify-between item-center">
                 <div class="text-h5 ">En Sucursales</div>
@@ -85,10 +85,6 @@
     </q-dialog>
     <q-dialog v-model="wndArchives.state" persistent>
       <QuotesArchive :quotes="qts_decline" @restore="restore" @destroy="destroy" />
-      <q-card-actions>
-        <q-btn flat label="Cancelar" v-close-popup>
-        </q-btn>
-      </q-card-actions>
     </q-dialog>
   </q-page>
 </template>
@@ -304,22 +300,22 @@ const synclient = async () => {
   let resp = await api.get('/admincli/syncClient').then(r => r).catch(r => r);
   console.log(resp)
   let status = resp.request.status
-  if(status != 200){
+  if (status != 200) {
     $q.notify({
       message: "hubo problemas con la replicacion",
       icon: 'close',
       color: 'negative'
     });
-  }else{
+  } else {
     let aresp = resp.data;
-  aresp.forEach(e => {
-    let isd = quotes.value.findIndex(el => el.id == e.id);
-    quotes.value[isd]._status = e._status
-    quotes.value[isd].Stores = e.Stores
-  });
-  wnd.value.state = false
-  wnd.value.pts = false;
-  $q.notify({
+    aresp.forEach(e => {
+      let isd = quotes.value.findIndex(el => el.id == e.id);
+      quotes.value[isd]._status = e._status
+      quotes.value[isd].Stores = e.Stores
+    });
+    wnd.value.state = false
+    wnd.value.pts = false;
+    $q.notify({
       message: "CLIENTES SINCRONIZADOS",
       icon: 'check_circle',
       color: 'positive'

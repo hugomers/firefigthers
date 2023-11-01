@@ -1,36 +1,31 @@
 <template>
-  <div class=" row justify-end">
-    <q-btn flat round icon="search" color="teal" @click="sar.state = true" title="Restaurar" size="2em" />
-  </div>
-  <q-dialog v-model="sar.state">
-    <q-card class="my-card">
-      <q-card-section>
-
-
-        <div class="text-h4">
-          <q-icon name="search" class="q-mr-xs" />
-          Buscador de Clientes
-        </div>
-        <q-card-section>
-          <q-form @submit="searching">
-            <div class="row justify-between">
-              <q-input v-model="cl_finder.val" type="text" label="Buscar" />
-              <!-- <pre>{{ cl_finder }}</pre> -->
-              <q-btn icon="search" type="submit" color="primary" />
-            </div>
-            <div v-if="cl_finder.state">
-              <q-table :rows="cl_finder.table.rows" :columns="cl_finder.table.cols" row-key="name" :no-data-label="cl_finder.table.noresults"/>
-            </div>
-          </q-form>
-
-        </q-card-section>
-
-
-      </q-card-section>
-    </q-card>
-  </q-dialog>
   <q-page padding class="flex flex-center">
-
+    <div class="absolute-top row justify-end">
+      <q-btn flat round icon="search" color="teal" @click="sar.state = true" title="Restaurar" size="2em" />
+    </div>
+    <q-dialog v-model="sar.state">
+      <q-card class="my-card">
+        <q-card-section>
+          <div class="text-h4">
+            <q-icon name="search" class="q-mr-xs" />
+            Buscador de Clientes
+          </div>
+          <q-card-section>
+            <q-form @submit="searching">
+              <div class="row justify-between">
+                <q-input v-model="cl_finder.val" type="text" label="Buscar" />
+                <!-- <pre>{{ cl_finder }}</pre> -->
+                <q-btn icon="search" type="submit" color="primary" />
+              </div>
+              <div v-if="cl_finder.state">
+                <q-table :rows="cl_finder.table.rows" :columns="cl_finder.table.cols" row-key="name"
+                  :no-data-label="cl_finder.table.noresults" />
+              </div>
+            </q-form>
+          </q-card-section>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
     <q-card bordered flat class="my-card">
       <q-card-section class="my-card bg-secondary text-white">
 
@@ -47,7 +42,7 @@
             <q-card-section class="">
               <div class="text-h5 text-center subrayado">Datos cliente</div>
             </q-card-section>
-            <q-input rounded outlined v-model="form.name" label="Nombre del Cliente" class="q-my-sm" > </q-input>
+            <q-input rounded outlined v-model="form.name" label="Nombre del Cliente" class="q-my-sm"> </q-input>
             <q-input rounded outlined v-model="form.address.street" label="Calle" class="q-my-sm"> </q-input>
             <div class="row  q-my-sm">
               <q-input rounded outlined v-model="form.address.numint" label="Num INT" class="col"> </q-input>
@@ -98,18 +93,18 @@ const $q = useQuasar();
 
 let sar = ref({ state: false });
 let cl_finder = ref({
-  state:false,
-  val:"",
-  table:{
-    cols:[
-      {name:'Fs_id', label:'Codigo', field:'CODCLI'},
-      {name:'Nombre', label:'Nombre', field:'NOFCLI'},
-      {name:'Email', label:'Correo', field:'EMACLI'},
-      {name:'Telefono', label:'Telefono', field:'TELCLI'},
-      {name:'Tarifa', label:'Precio', field:'TARCLI'},
+  state: false,
+  val: "",
+  table: {
+    cols: [
+      { name: 'Fs_id', label: 'Codigo', field: 'CODCLI' },
+      { name: 'Nombre', label: 'Nombre', field: 'NOFCLI' },
+      { name: 'Email', label: 'Correo', field: 'EMACLI' },
+      { name: 'Telefono', label: 'Telefono', field: 'TELCLI' },
+      { name: 'Tarifa', label: 'Precio', field: 'TARCLI' },
     ],
-    rows:[],
-    noresults:"><"
+    rows: [],
+    noresults: "><"
   }
 });
 
@@ -134,7 +129,7 @@ let form = ref({
   email: null,
   priceList: {
     val: null, opts: [
-      { id: 1, label: "Menudeo" },
+      // { id: 1, label: "Menudeo" },
       { id: 2, label: "Mayoreo" },
       { id: 3, label: "Docena" },
       { id: 4, label: "Caja" },
