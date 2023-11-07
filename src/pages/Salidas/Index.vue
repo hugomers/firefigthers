@@ -33,10 +33,17 @@
         </q-card-section>
         <q-card-actions align="right">
           <q-btn flat v-close-popup>Cancelar</q-btn>
-          <q-btn flat @click="createEnt">Crear Entrada</q-btn>
+          <q-btn flat @click="createEnt" :disable="bloc">Crear Entrada</q-btn>
         </q-card-actions>
       </q-card>
     </q-dialog>
+    <div v-if="bloc">
+        <q-spinner-dots
+          color="secondary"
+          size="2em"
+        />
+        <q-tooltip :offset="[0, 8]">creando..</q-tooltip>
+      </div>
   </q-page>
 </template>
 
@@ -49,6 +56,7 @@ const $q = useQuasar();
 
 let wnd = ref({ state: false, row: null, pts: false });
 let salidas = ref([])
+let bloc = ref(false)
 
 let table = ref({
   // vcolumns: ['client', 'celphone', 'price', 'status'],
@@ -93,6 +101,7 @@ const clicked = (a, row) => {
 const createEnt = async () => {
   console.log("se creara la entrada");
   let factura = wnd.value.row.SALIDA;
+  bloc.value = true
   let resp = await api.post('/Products/invoiceReceived', { factura }).then(r => r).catch(r => r);
   let status = resp.request.status
   if (status != 200) {
@@ -113,6 +122,7 @@ const createEnt = async () => {
       icon: 'check_circle',
       color: 'positive'
     });
+    bloc.value = false
 
   }
   console.log(resp);

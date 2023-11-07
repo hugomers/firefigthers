@@ -1,7 +1,7 @@
 
 const routes = [
   {
-    path: '/',
+    path: '/formcli',
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import('pages/Clientes/Index.vue') },
@@ -20,6 +20,14 @@ const routes = [
     component: () => import('layouts/SalidasLayout.vue'),
     children: [
       { path: '', component: () => import('pages/Salidas/Index.vue') }
+    ]
+  },
+  ,
+  {
+    path: '/Abonos',
+    component: () => import('layouts/AbonosLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/Abonos/Index.vue') }
     ]
   },
 
