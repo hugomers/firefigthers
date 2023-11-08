@@ -2,24 +2,24 @@
   <q-page padding>
     <q-card class="my-card">
 
-        <q-card-section class="col">
-          <q-table title="Salidas" :rows="salsent" row-key="name" :columns="table.cols" :filter="table.filter"
-            @row-click="clicked">
-            <template v-slot:top>
-              <div class=" full-width row justify-between item-center">
-                <div class="text-h5">salidas s/ entrada</div>
-                <q-input v-model="table.filter" type="text" label="Buscar" />
-              </div>
-            </template>
-          </q-table>
-        </q-card-section>
+      <q-card-section class="col">
+        <q-table title="Salidas" :rows="salsent" row-key="name" :columns="table.cols" :filter="table.filter"
+          @row-click="clicked">
+          <template v-slot:top>
+            <div class=" full-width row justify-between item-center">
+              <div class="text-h5">salidas s/ entrada</div>
+              <q-input v-model="table.filter" type="text" label="Buscar" />
+            </div>
+          </template>
+        </q-table>
+      </q-card-section>
 
 
-        <q-card-section class="col">
-          <q-table title="Salidas c/ entradas" :rows="salcent" row-key="name" :columns="table2.cols"
-            :filter="table2.filter">
-          </q-table>
-        </q-card-section>
+      <q-card-section class="col">
+        <q-table title="Salidas c/ entradas" :rows="salcent" row-key="name" :columns="table2.cols"
+          :filter="table2.filter">
+        </q-table>
+      </q-card-section>
 
     </q-card>
     <q-dialog v-model="wnd.state" persistent>
@@ -37,13 +37,16 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
-    <div v-if="bloc">
-        <q-spinner-dots
-          color="secondary"
-          size="2em"
-        />
-        <q-tooltip :offset="[0, 8]">creando..</q-tooltip>
-      </div>
+    <q-dialog v-model="bloc" :persistent="bloc">
+      <q-card v-if="bloc">
+        <q-card-section class="row items-center">
+          <q-spinner-dots color="secondary" size="2em" />
+          <q-tooltip :offset="[0, 8]">creando..</q-tooltip>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+
+
   </q-page>
 </template>
 
