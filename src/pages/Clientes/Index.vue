@@ -184,7 +184,7 @@ const saveQuote = async () => {
     console.log(dataToSave.value)
     form.value.state = false;
     $q.notify({
-      message: "Formulario Enviado...",
+      message: "Formulario Enviado....",
       icon: 'check_circle',
       color: 'positive'
     });
