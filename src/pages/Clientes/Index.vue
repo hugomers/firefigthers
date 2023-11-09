@@ -75,7 +75,7 @@
             <q-input rounded outlined v-model="form.notes" label="Notas" class="q-my-sm"> </q-input>
           </div>
           <div v-if="isFormValid">
-            <q-btn label="Submit" type="submit" color="primary" :loading="form.state" />
+            <q-btn label="Enviar" type="submit" color="primary" :loading="form.state" />
           </div>
         </q-form>
       </q-card-section>
@@ -184,7 +184,7 @@ const saveQuote = async () => {
     console.log(dataToSave.value)
     form.value.state = false;
     $q.notify({
-      message: "Formulario Creado...",
+      message: "Formulario Enviado...",
       icon: 'check_circle',
       color: 'positive'
     });

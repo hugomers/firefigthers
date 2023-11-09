@@ -22,7 +22,7 @@
             :visible-columns="table2.vcolumns">
             <template v-slot:top>
               <div class=" full-width row justify-between item-center" >
-                <div><q-btn color="positive" icon="sync" @click="synclient" :disabled="!qts_acepted"/></div>
+                <div><q-btn color="positive" icon="sync" @click="synclient" :disabled="(qts_acepted <= 0)"/></div>
                 <div class="text-h5">Aceptadas</div>
                 <q-input v-model="table2.filter" type="text" label="Buscar" />
               </div>
