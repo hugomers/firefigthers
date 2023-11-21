@@ -31,6 +31,13 @@ const routes = [
     ]
   },
 
+  {
+    path: '/Assist',
+    component: () => import('layouts/AsistenciasLayout.vue'),
+    children: [
+      // { path: '', component: () => import('pages/Abonos/Index.vue') }
+    ]
+  },
   // Always leave this as last one,
   // but you can also remove it
   {
