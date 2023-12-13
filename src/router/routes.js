@@ -38,6 +38,13 @@ const routes = [
       // { path: '', component: () => import('pages/Abonos/Index.vue') }
     ]
   },
+  {
+    path: '/traspasos',
+    component: () => import('layouts/TraspasosLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/Traspasos/Index.vue') }
+    ]
+  },
   // Always leave this as last one,
   // but you can also remove it
   {
