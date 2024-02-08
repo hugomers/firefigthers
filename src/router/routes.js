@@ -32,10 +32,10 @@ const routes = [
   },
 
   {
-    path: '/Assist',
+    path: '/assist',
     component: () => import('layouts/AsistenciasLayout.vue'),
     children: [
-      // { path: '', component: () => import('pages/Abonos/Index.vue') }
+      { path: '', component: () => import('pages/Assist/Index.vue') }
     ]
   },
   {

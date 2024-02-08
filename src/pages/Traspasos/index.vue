@@ -1,5 +1,6 @@
 <template>
   <q-page padding>
+
     <q-card class="my-card row">
       <q-card-section>
         <div class="text-h4">
@@ -12,93 +13,72 @@
           :options="select.opts" style="width: 250px" behavior="menu" @update:model-value="updmod">
         </q-select>
       </q-card-section>
-      <q-card-section v-if="devoluciones.state">
-        <q-btn color="negative" icon="archive" @click="mosig" />
-      </q-card-section>
     </q-card>
-    <div class="q-pa-md">
-      <div v-if="devoluciones.state">
-        <q-table title="Devoluciones Pendientes" :rows="sabon" row-key="name" :filter="devoluciones.filter"
-          @row-click="clicked">
-          <template v-slot:top-right>
-            <q-input borderless dense debounce="300" v-model="devoluciones.filter" placeholder="Buscar">
-              <template v-slot:append>
-                <q-icon name="search" />
-              </template>
-            </q-input>
-          </template>
-        </q-table>
-      </div>
-    </div>
-    <div class="q-pa-md">
-      <div v-if="devoluciones.state">
-        <q-table title="Devoluciones con Abono" :rows="cabon" row-key="name" :filter="devoluciones.filter">
-          <template v-slot:top-right>
-            <q-input borderless dense debounce="300" v-model="devoluciones.filter" placeholder="Buscar">
-              <template v-slot:append>
-                <q-icon name="search" />
-              </template>
-            </q-input>
-          </template>
-        </q-table>
-      </div>
+
+    <q-separator spaced inset vertical dark />
+    {{ devoluciones }}
+
+    <div v-if="traspasos.state">
+      <q-table title="Traspasos Pendientes" :rows="sinini" @row-click="inicio" />
     </div>
 
-    <q-dialog v-model="mos" persistent>
-      <q-card>
-        <q-card-section>
-          <q-card-actions vertical align="left">
-            <q-btn flat icon="arrow_back" v-close-popup />
-          </q-card-actions>
-        </q-card-section>
+    <q-separator spaced inset vertical dark />
 
-        <q-table :rows="igno" row-key="name" @row-click="clig" />
+    <div v-if="traspasos.state">
+      <q-table title="Traspasos Solo Abono" :rows="abonos" @row-click="conabono" />
 
-      </q-card>
+    </div>
 
-    </q-dialog>
 
-    <q-dialog v-model="menig.state" persistent>
+    <q-separator spaced inset vertical dark />
+
+
+    <div v-if="traspasos.state">
+      <q-table title="Traspasos Solo Salida" :rows="salidas" @row-click="consalida"/>
+    </div>
+
+    <q-separator spaced inset vertical dark />
+
+    <div v-if="traspasos.state">
+      <q-table title="Traspasos Completados" :rows="completo" @row-click="termino" />
+    </div>
+
+    <q-dialog v-model="selector.state" persistent>
       <q-card class="my-card">
         <q-card-section>
-          <div class="text-h6"> DEVOLUCION : {{ menig.row.DEVOLUCION }}</div>
-          <div class="text-subtitle2"> REF : {{ menig.row.REFERENCIA }}</div>
-
+          <div class="text-h6">Devolucion : {{ selector.body.DEVOLUCION }}</div>
+          <div class="text-subtitle2">Referencia: {{ selector.body.REFERENCIA }}</div>
+          <div class="text-subtitle2">Fecha: {{ selector.body.FECHA }}</div>
         </q-card-section>
         <q-card-actions align="right">
-          <q-btn flat label="Cerrar" color="primary" v-close-popup />
-          <q-btn flat label="Restaurar" color="primary" @click="restore" />
-
-
+          <q-btn flat icon="close" color="negative" v-close-popup title="cancelar"/>
+          <q-btn flat icon="arrow_forward" color="positive" title="Traspasar" @click="init" />
         </q-card-actions>
       </q-card>
     </q-dialog>
 
-    <q-dialog v-model="wnd.state" persistent>
-      <q-card class="my-card">
+    <q-dialog v-model="selector.promp" persistent>
+      <q-card style="min-width: 350px">
         <q-card-section>
-          <div class="text-h6">Devolucion: ({{ wnd.row.DEVOLUCION }})</div>
-          <div class="text-subtitle2">Referencia: {{ wnd.row.REFERENCIA }}</div>
+          <div class="text-h6">Seleccione Destino</div>
         </q-card-section>
-        <q-card-section>
-          <q-card-actions>
-            <q-btn flat label="Ignorar" @click="ignored" />
-            <q-btn flat label="Generar Abono" @click="gena" :disable="bloc" />
-          </q-card-actions>
+
+        <q-card-section class="q-pt-none">
+          <q-select filled v-model="workpoints.val" option-label="name" label="Sucursal Destino"
+          :options="workpoints.opts">
+        </q-select>
         </q-card-section>
-        <q-card-actions>
-          <q-btn flat label="Cerrar" v-close-popup />
+
+        <q-card-actions align="right">
+          <q-btn flat icon="close" v-close-popup color="negative" />
+          <q-btn flat icon="arrow_forward" color="positive" title="Traspasar" :disable="workpoints.val == null ? true : false " @click="procedimiento" />
         </q-card-actions>
       </q-card>
     </q-dialog>
-    <q-dialog v-model="bloc" :persistent="bloc">
-      <q-card v-if="bloc">
-        <q-card-section class="row items-center">
-          <q-spinner-dots color="secondary" size="2em" />
-          <q-tooltip :offset="[0, 8]">creando..</q-tooltip>
-        </q-card-section>
-      </q-card>
-    </q-dialog>
+
+
+
+
   </q-page>
 </template>
 
@@ -114,32 +94,30 @@ let select = ref({
 })
 
 let branches = ref([]);
-let bloc = ref(false)
 
-
-let devoluciones = ref({
+let traspasos = ref({
   state: false,
   cols: [],
   filter: ""
 });
 
-let wnd = ref({
-  state: false,
-  row: null
+let selector = ref({
+  state:false,
+  body:null,
+  promp:false,
 })
 
-let mos = ref(false);
-let menig = ref({
-  state: false,
-  row: null
-});
+let workpoints = ref({
+  val:null,
+  opts:null
+})
 
+let devoluciones = ref([]);
 
-
-let cabon = computed(() => devoluciones.value.cols.filter(e => e.ABONO.includes("-")));
-let sabon = computed(() => devoluciones.value.cols.filter(e => e.ABONO == '' || e.ABONO == "''"));
-let igno = computed(() => devoluciones.value.cols.filter(e => e.ABONO == 'No se creara Abono'));
-
+const abonos = computed(() => traspasos.value.cols.filter((e) => e.TRAZABILIDAD.includes('abono')));
+const salidas = computed(() => traspasos.value.cols.filter((e) => e.TRAZABILIDAD.includes('salida')));
+const completo = computed(() => traspasos.value.cols.filter((e) => e.TRAZABILIDAD.includes('entrada')));
+const sinini = computed(() => traspasos.value.cols.filter((e) => e.TRAZABILIDAD == ''))
 
 
 const index = async () => {
@@ -152,147 +130,49 @@ const index = async () => {
     console.log(resp);
     branches.value = resp.data;
     select.value.opts = resp.data;
+    workpoints.value.opts = resp.data
   }
-
-  // resp.data.solicitudes.map(s => s.address = JSON.parse(s.address))
 }
 
 const updmod = async (v) => {
   console.log(v.id)
   let id = v.id;
   let clise = await api.post('/abonos/gettras', { id });
-  devoluciones.value.cols = clise.data;
-  devoluciones.value.state = true
-  console.log(clise.data);
+  console.log(clise.data)
+  let devi = clise.data.devoluciones;
+  let devidb = clise.data.movimientos;
+  let exist = devidb.map(e => e.refund);
+  traspasos.value.cols = devi.filter(e => !exist.includes(e.DEVOLUCION))
 
+  traspasos.value.state = true
 }
 
-const clicked = (a, row) => {
-  wnd.value.state = true
-  wnd.value.row = row
+const inicio = (a,b) => {
+  console.log(b);
+  selector.value.state = true;
+  selector.value.body = b
+
+};
+
+const init = () => {
+  selector.value.promp = true;
 }
 
-const ignored = async () => {
-  bloc.value = true;
-  console.log("ignorando")
-  let devol = wnd.value.row.DEVOLUCION;
-  let sucu = select.value.val.id;
-  let msg = "No se creara Abono";
-  let datimp = {
-    devol: devol,
-    idsuc: sucu,
-    mssg: msg
+const procedimiento = async() => {
+  console.log('iniciar');
+  let evin = {
+    from:select.value.val,
+    to:workpoints.value.val,
+    devolucion:selector.value.body.DEVOLUCION
   }
-  let updev = await api.post('/Products/updev', datimp)
-    .then(r => r).catch(r => r);
-  let status = updev.request.status;
-  if (status != 200) {
-    console.log(updev.request);
-    $q.notify({
-      message: "status: " + updev.request.status + " mssg: " + updev.request.statusText,
-      icon: 'close',
-      color: 'negative'
-    });
-  } else {
-    console.log(updev.data)
-    let inx = devoluciones.value.cols.findIndex(e => e.DEVOLUCION == devol)
-    devoluciones.value.cols[inx].ABONO = msg;
-    $q.notify({
-      message: "Devolucion " + devol + " Ignorada",
-      icon: 'check',
-      color: 'positive'
-    });
-    wnd.value.state = false;
-    bloc.value = false;
-  }
-
+  let envbd = await api.post('/abonos/iniproces',evin);
+  console.log(envbd);
+  devoluciones.value = envbd.data;
 }
-
-const gena = async () => {
-  console.log("Generando Abono");
-  bloc.value = true;
-
-  let envdat = {
-    idsuc: select.value.val.id,
-    devolucion: wnd.value.row.DEVOLUCION,
-    observacion: wnd.value.row.REFERENCIA
-  }
-  let data = await api.post('/Products/trapasAbo', envdat)
-    .then(r => r).catch(r => r);
-  let status = data.request.status;
-  if (status != 200) {
-    console.log(data.request);
-    $q.notify({
-      message: "status: " + data.request.status + " mssg: " + data.request.statusText,
-      icon: 'close',
-      color: 'negative'
-    });
-  } else {
-    console.log(data.data)
-    let inx = devoluciones.value.cols.findIndex(e => e.DEVOLUCION == data.data.Movimientos.Devolucion)
-    devoluciones.value.cols[inx].ABONO = data.data.Movimientos.Abono;
-    $q.notify({
-      message: "Abono " + data.data.Movimientos.Abono + " creado",
-      icon: 'check',
-      color: 'positive'
-    });
-    wnd.value.state = false;
-    bloc.value = false;
-  }
-
-}
-
-let mosig = () => {
-  console.log("Mostrando Ignorados");
-  mos.value = true;
-}
-
-let clig = async (a, row) => {
-  console.log(row)
-  menig.value.state = true
-  menig.value.row = row
-
-}
-
-let restore = async () => {
-  console.log('se va a restaurar');
-  bloc.value = true;
-  let devol = menig.value.row.DEVOLUCION;
-  let sucu = select.value.val.id;
-  let msg = "''";
-  let datimp = {
-    devol: devol,
-    idsuc: sucu,
-    mssg: msg
-  }
-  let res = await api.post('/Products/updev', datimp)
-    .then(r => r).catch(r => r);
-  let status = res.request.status;
-  if (status != 200) {
-    console.log(res.request);
-    $q.notify({
-      message: "status: " + res.request.status + " mssg: " + res.request.statusText,
-      icon: 'close',
-      color: 'negative'
-    });
-  } else {
-    console.log(res.data)
-    let inx = devoluciones.value.cols.findIndex(e => e.DEVOLUCION == devol)
-    devoluciones.value.cols[inx].ABONO = msg;
-    $q.notify({
-      message: "Devolucion " + devol + " restaurada",
-      icon: 'check',
-      color: 'positive'
-    });
-    menig.value.state = false;
-    bloc.value = false;
-  }
-
-}
+const conabono = () => console.log('ahoritacontinuo');
+const consalida = () => console.log('ahoritasigo');
+const termino = () => console.log('ahoritatermino');
 
 
 index()
-
-
-
 </script>
