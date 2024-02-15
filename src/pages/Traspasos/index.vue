@@ -312,7 +312,8 @@ const procedimiento = async() => {
       color: 'negative'
     });
   }else{
-
+    selctor.value.promp = false;
+    workpoints.value.val = null;
     $q.notify({
       message: "Se Inicio",
       icon: 'check_circle',
