@@ -42,7 +42,7 @@ const routes = [
     path: '/traspasos',
     component: () => import('layouts/TraspasosLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/Traspasos/index.vue') }
+      { path: '', component: () => import('src/pages/Traspasos/index.vue') }
     ]
   },
   // Always leave this as last one,
