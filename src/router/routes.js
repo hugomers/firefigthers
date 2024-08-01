@@ -35,7 +35,7 @@ const routes = [
     path: '/assist',
     component: () => import('layouts/AsistenciasLayout.vue'),
     children: [
-      { path: 'report', component: () => import('pages/Assist/Index.vue') },
+      { path: '', component: () => import('pages/Assist/Index.vue') },
       { path: 'devices', component: () => import('pages/Assist/Devices.vue') },
       { path: 'staff', component: () => import('pages/Assist/Staff.vue') },
       { path: 'excuses', component: () => import('pages/Assist/Excuses.vue') },

@@ -9,9 +9,9 @@
         v-model="tab"
         class="text-primary"
       >
-        <q-route-tab name="devices" icon="devices" label="Dispositivos" to="devices" />
-        <q-route-tab name="report" icon="show_chart" label="Reporte" to="report" />
-        <q-route-tab name="person" icon="person_add" label="Colaboradores" to="staff" />
+        <q-route-tab name="devices" icon="devices" label="Dispositivos" to="/assist/devices" />
+        <q-route-tab name="report" icon="show_chart" label="Reporte" to="/assist" />
+        <q-route-tab name="person" icon="person_add" label="Colaboradores" to="/assist/staff" />
         <!-- <q-route-tab name="excuse" icon="work" label="Justificaciones" to="excuses"/> -->
 
       </q-tabs>
