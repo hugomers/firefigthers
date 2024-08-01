@@ -16,6 +16,8 @@
               </div>
             </template>
           </q-table>
+
+          
         </q-card-section>
         <q-card-section class="col">
           <q-table title="Aceptados" :rows="qts_acepted" :columns="table2.cols" row-key="name" :filter="table2.filter"
@@ -55,22 +57,25 @@
       <q-card v-if="wnd.pts">
         <q-card-section>
           <q-spinner-ball color="primary" size="md" />
-          <q-tooltip :offset="[0, 8]">QSpinnerBall</q-tooltip>
+          <q-tooltip :offset="[0, 8]">Dando de alta en sucursales :)</q-tooltip>
         </q-card-section>
 
       </q-card>
       <q-card v-else>
         <q-card-section v-if="wnd.row._status == 0">
-          <div class="text-h6 ">Solicitud: {{ wnd.row.id }}</div>
-          <div class="text-h5 text-center">Cliente</div>
-          <div class="text-h4 text-center">{{ wnd.row.nom_cli }}</div>
-          <div class="text-subtitle2 text-center">Sucursal: {{ wnd.row.sucursal }}</div>
-          <q-card-actions align="right">
-            <q-btn flat @click="ignoredClient">Rechazar</q-btn>
-            <q-btn flat @click="addClient">Aprobar</q-btn>
-          </q-card-actions>
-
+          <div class="text-h6 text-center ">Solicitud: {{ wnd.row.id }}</div>
+          <div class="text-h5 text-left">Cliente</div>
+          <div class="text-h5 text-left">{{ wnd.row.nom_cli }}</div>
+          <div class="text-subtitle2 text-left">Sucursal: {{ wnd.row.sucursal }}</div>
+          <div class="text-subtitle2 text-left">Precio: {{ wnd.row.price }}</div>
+          <div class="text-subtitle2 text-left">Telefono: {{ wnd.row.celphone }}</div>
+          <div class="text-subtitle2 text-left">Correo: {{ wnd.row.email }}</div>
+          <div class="text-subtitle2 text-left">Solicitado: {{ wnd.row.created_at }}</div>
         </q-card-section>
+        <q-card-actions align="right">
+            <q-btn flat @click="ignoredClient" color="negative">Rechazar</q-btn>
+            <q-btn flat @click="addClient" color="positive">Aprobar</q-btn>
+          </q-card-actions>
         <q-card-section v-if="wnd.row._status == 1">
           {{ wnd.row }} - 1
         </q-card-section>

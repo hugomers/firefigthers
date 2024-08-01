@@ -1,35 +1,41 @@
 <template>
   <q-page padding>
-    <div class="text-center text-h4"> Reporte de Asistencias</div>
 
     <div class="q-pa-sm q-gutter-sm flex justify-center">
-      <q-btn :loading="clicdow" @click="download" color="primary" icon="cloud_download" label="Descargar"
-        style="width: 300px" :disable="disabled" />
+      <!-- <q-btn :loading="clicdow" @click="download" color="primary" icon="cloud_download" label="Descargar"
+        style="width: 300px" :disable="disabled" flat /> -->
       <q-btn :loading="clicjus" @click="justify" color="primary" icon="warning" label="Replicar Justificaciones"
         style="width: 300px" :disable="disabled" />
       <q-btn :loading="clictuc" @click="sync" color="primary" icon="sync" label="Replicar Ultimas Checadas"
         style="width: 300px" :disable="disabled" />
-      <q-btn :loading="cliccon" @click="conec" color="primary" icon="sensors" label="Conexion a sucursales"
+      <!-- <q-btn :loading="cliccon" @click="conec" color="primary" icon="sensors" label="Conexion a sucursales"
         style="width: 300px" :disable="disabled" />
       <q-btn :loading="clicacf" @click="hgco" color="primary" icon="group_add" label="Alta colaboradores faltantes"
-        style="width: 300px" :disable="disabled" />
-    </div>
+        style="width: 300px" :disable="disabled" /> -->
+    </div> 
 
     <div><!-- tabla de datos reporte -->
       <q-option-group v-model="sucursales.val" inline class="q-mb-md" :options="sucursales.opts" />
+
 
       <q-table title="Asistencias" :rows="mosconfil" row-key="ID" flat bordered :separator="'cell'" dense
         :filter="reporte.filter" no-data-label="No hay nada Aun">
         <template v-slot:top>
 
           <q-separator spaced inset vertical dark />
-          <div class>Reporte de Asistencias</div>
+          <div class="row items-center">
+            <q-btn :loading="clicdow" @click="download" color="primary" icon="cloud_download" :disable="disabled" flat />
+            <div class="col">Reporte de Asistencias</div>  
+          </div>
+
+
+
 
           <q-space />
 
           <q-input borderless dense debounce="300" color="primary" v-model="reporte.filter">
             <template v-slot:append>
-              <q-icon name="search" />
+                <q-icon name="search" />
             </template>
           </q-input>
         </template>
