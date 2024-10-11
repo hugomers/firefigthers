@@ -73,7 +73,7 @@
                   <br>
                   <strong>{{ dayjs(props.row._time).diff(dayjs(props.row._curret), 'second', true) }} s</strong>
                 </div>
-               
+
             </div>
             </q-card-section>
             <q-separator />
@@ -101,7 +101,7 @@
             </template>
           </q-input>
           <q-separator spaced inset vertical dark />
-          
+
           <div class="text-center">Dispositivo: <div class="text-center">{{ device._time }}</div></div>
           <q-separator spaced inset vertical dark />
           <div class="text-center"> Horario: <div class="text-centert">{{ device._curret }}</div> </div>
@@ -169,7 +169,7 @@ const init = async () => {
 
 const pings = (devices) => {
   devices.forEach((e,index) => {
-    setTimeout(() => { 
+    setTimeout(() => {
         api.get(`/zkt/Ping/${e.ip_address}`)
         .then(i => {
           console.log(i.data)
@@ -248,10 +248,10 @@ const replyRegister = async () => {
 }
 
 const changeDate = async () => {
-  const ip = device.value.ip_address
-  console.log(ip)
+  const id = device.value.id
+  console.log(id)
   $q.loading.show({ message: 'Cambiando Horario :P' });
-  const resp = await api.get(`/zkt/changeDate/${ip}`)
+  const resp = await api.get(`/zkt/changeDate/${id}`)
   if (resp.status != 200) {
     console.log(resp)
   } else {
@@ -263,8 +263,19 @@ const changeDate = async () => {
   }
 }
 
-const deleteRegister = () => {
-  
+const deleteRegister = async () => {
+  replyRegister()
+  const id = device.value.id
+  console.log(id)
+  $q.loading.show({ message: 'ELIMINANDO REGISTROS :P' });
+  const resp = await api.delete(`/zkt/deleteAttendance/${id}`)
+  if (resp.status != 200) {
+    console.log(resp)
+  } else {
+    console.log(resp.data)
+    $q.notify({message:'Registros Eliminados :)', type:'positive', position:'center'})
+    $q.loading.hide();
+  }
 }
 
 
