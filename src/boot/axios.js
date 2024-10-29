@@ -14,7 +14,6 @@ const api = axios.create({ baseURL: 'http://192.168.10.238:2902/Assist/public/ap
 
 // const api = axios.create({ baseURL: 'http://192.168.10.112:1920/Assist/public/api' })
 
-
 export default boot(({ app }) => {
   // for use inside Vue files (Options API) through this.$axios and this.$api
 
