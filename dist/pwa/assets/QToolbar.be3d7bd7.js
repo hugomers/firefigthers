@@ -1,5 +1,0 @@
-<<<<<<<< HEAD:dist/pwa/assets/QToolbar.5bf4c5f6.js
-import{c as s,d as t,f as r,t as l}from"./index.712e81e7.js";var i=s({name:"QToolbarTitle",props:{shrink:Boolean},setup(o,{slots:e}){const a=t(()=>"q-toolbar__title ellipsis"+(o.shrink===!0?" col-shrink":""));return()=>r("div",{class:a.value},l(e.default))}}),p=s({name:"QToolbar",props:{inset:Boolean},setup(o,{slots:e}){const a=t(()=>"q-toolbar row no-wrap items-center"+(o.inset===!0?" q-toolbar--inset":""));return()=>r("div",{class:a.value,role:"toolbar"},l(e.default))}});export{p as Q,i as a};
-========
-import{c as s,d as t,f as r,t as l}from"./index.d324de52.js";var i=s({name:"QToolbarTitle",props:{shrink:Boolean},setup(o,{slots:e}){const a=t(()=>"q-toolbar__title ellipsis"+(o.shrink===!0?" col-shrink":""));return()=>r("div",{class:a.value},l(e.default))}}),p=s({name:"QToolbar",props:{inset:Boolean},setup(o,{slots:e}){const a=t(()=>"q-toolbar row no-wrap items-center"+(o.inset===!0?" q-toolbar--inset":""));return()=>r("div",{class:a.value,role:"toolbar"},l(e.default))}});export{p as Q,i as a};
->>>>>>>> 42af6dda5d24c3aa872a30f42b3697d1e3aa2fab:dist/pwa/assets/QToolbar.be3d7bd7.js
