@@ -31,7 +31,7 @@
             </q-card-section>
             <q-separator />
             <q-card-section class="text-center">
-            <div class="row">
+              <div class="row">
                 <div class="col">
                   Direccion Ip
                   <br>
@@ -46,7 +46,7 @@
             </q-card-section>
             <q-separator />
             <q-card-section class="text-center">
-            <div class="row">
+              <div class="row">
 
                 <div class="col">
                   Horario
@@ -62,7 +62,7 @@
             </q-card-section>
             <q-separator />
             <q-card-section class="text-center">
-            <div class="row">
+              <div class="row">
                 <div class="col">
                   Registros
                   <br>
@@ -74,7 +74,7 @@
                   <strong>{{ dayjs(props.row._time).diff(dayjs(props.row._curret), 'second', true) }} s</strong>
                 </div>
 
-            </div>
+              </div>
             </q-card-section>
             <q-separator />
           </q-card>
@@ -102,26 +102,44 @@
           </q-input>
           <q-separator spaced inset vertical dark />
 
-          <div class="text-center">Dispositivo: <div class="text-center">{{ device._time }}</div></div>
+          <div class="text-center">Dispositivo: <div class="text-center">{{ device._time }}</div>
+          </div>
           <q-separator spaced inset vertical dark />
-          <div class="text-center"> Horario: <div class="text-centert">{{ device._curret }}</div> </div>
+          <div class="text-center"> Horario: <div class="text-centert">{{ device._curret }}</div>
+          </div>
           <q-separator spaced inset vertical dark />
-          <div class="text-center">Diferencia: <div class="text-center">{{ dayjs(device._time).diff(dayjs(device._curret), 'second', true) }}</div> </div>
-
+          <div class="text-center">Diferencia: <div class="text-center">{{
+            dayjs(device._time).diff(dayjs(device._curret),
+              'second', true) }}</div>
+          </div>
         </q-card-section>
 
-        <q-card-section >
-           <q-btn color="primary"  label="Registros" @click="replyRegister" outline class="full-width" />
-           <q-separator spaced inset vertical dark />
-           <q-btn color="primary"  label="Cambiar Horario" @click="changeDate" outline class="full-width" />
-           <q-separator spaced inset vertical dark />
-           <q-btn color="primary"  label="Eliminar Registros" @click="deleteRegister" outline class="full-width" />
+        <q-card-section>
+          <q-btn color="primary" label="Registros" @click="replyRegister" outline class="full-width" />
+          <q-separator spaced inset vertical dark />
+          <q-btn color="primary" label="Cambiar Horario" @click="changeDate" outline class="full-width" />
+          <q-separator spaced inset vertical dark />
+          <q-btn color="primary" label="Eliminar Registros" @click="deleteConfirm.state = !deleteConfirm.state" outline
+            class="full-width" :disabled="device._att < 1000" />
 
         </q-card-section>
 
         <q-card-actions align="center">
           <q-btn flat label="Cancel" color="negative" v-close-popup />
           <q-btn flat label="Editar" color="positive" @click="edit(device)" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+    <q-dialog v-model="deleteConfirm.state" persistent>
+      <q-card>
+        <q-card-section class="row items-center">
+          <q-avatar icon="warning" color="warning" text-color="white" />
+          <span class="q-ml-sm">Estas seguro de eliminar los registros ? Ya replicaste ? Segur@?</span>
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn flat label="Cancelar" color="positive" v-close-popup />
+          <q-btn flat label="Aceptar" color="negative" @click="deleteRegister" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -140,6 +158,9 @@ const $router = useRouter();
 
 const devices = ref([])
 const time = ref(null)
+const deleteConfirm = ref({
+  state: false
+})
 const device = ref([])
 const wndView = ref(false)
 const table = ref({
@@ -168,9 +189,9 @@ const init = async () => {
 }
 
 const pings = (devices) => {
-  devices.forEach((e,index) => {
+  devices.forEach((e, index) => {
     setTimeout(() => {
-        api.get(`/zkt/Ping/${e.ip_address}`)
+      api.get(`/zkt/Ping/${e.ip_address}`)
         .then(i => {
           console.log(i.data)
           e._status = i.data.connect;
@@ -180,7 +201,8 @@ const pings = (devices) => {
         })
         .catch(error => {
           console.error(`Error pinging ${e.ip_address}:`, error);
-        });},index * 1000)
+        });
+    }, index * 1000)
 
   });
 }
@@ -207,23 +229,23 @@ const ping = async (ip) => {
 }
 
 const edit = async (device) => {
-    console.log(device)
-    $q.loading.show({ message: 'Editando' });
-    const resp = await  api.post(`/zkt/Edit`,device)
-    if (resp.status != 200) {
-      console.log(resp.data);
-    } else {
-      console.log(resp.data);
-      wndView.value = false;
-      $q.notify({
-        message: 'Dispositivo Actualizado',
-        type: 'positive',
-        position: 'center'
-      })
-      $q.loading.hide();
-      init()
-    }
+  console.log(device)
+  $q.loading.show({ message: 'Editando' });
+  const resp = await api.post(`/zkt/Edit`, device)
+  if (resp.status != 200) {
+    console.log(resp.data);
+  } else {
+    console.log(resp.data);
+    wndView.value = false;
+    $q.notify({
+      message: 'Dispositivo Actualizado',
+      type: 'positive',
+      position: 'center'
+    })
+    $q.loading.hide();
+    init()
   }
+}
 
 
 const view = (row) => {
@@ -242,7 +264,7 @@ const replyRegister = async () => {
     console.log(resp)
   } else {
     console.log(resp.data)
-    $q.notify({message:resp.data.goals, type:'positive', position:'center'})
+    $q.notify({ message: resp.data.goals, type: 'positive', position: 'center' })
     $q.loading.hide();
   }
 }
@@ -258,26 +280,33 @@ const changeDate = async () => {
     console.log(resp.data)
     device.value._time = resp.data.date
     device.value._curret = resp.data.date
-    $q.notify({message:'Cambio Realizado :)', type:'positive', position:'center'})
+    $q.notify({ message: 'Cambio Realizado :)', type: 'positive', position: 'center' })
     $q.loading.hide();
   }
 }
 
 const deleteRegister = async () => {
-  replyRegister()
-  const id = device.value.id
-  console.log(id)
-  $q.loading.show({ message: 'ELIMINANDO REGISTROS :P' });
-  const resp = await api.delete(`/zkt/deleteAttendance/${id}`)
-  if (resp.status != 200) {
-    console.log(resp)
-  } else {
-    console.log(resp.data)
-    $q.notify({message:'Registros Eliminados :)', type:'positive', position:'center'})
+  try {
+    await replyRegister();
+    const id = device.value.id;
+    console.log(id);
+
+    $q.loading.show({ message: 'ELIMINANDO REGISTROS :P' });
+
+    const resp = await api.delete(`/zkt/deleteAttendance/${id}`);
+    if (resp.status !== 200) {
+      console.log(resp);
+    } else {
+      console.log(resp.data);
+      $q.notify({ message: 'Registros Eliminados :)', type: 'positive', position: 'center' });
+    }
+  } catch (error) {
+    console.error(error);
+  } finally {
     $q.loading.hide();
+    deleteConfirm.value.state = !deleteConfirm.value.state
   }
 }
-
 
 
 init()
